@@ -32,24 +32,26 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
 
 		HttpServletRequest httpRequest = (HttpServletRequest) req;
 		String authToken = httpRequest.getHeader(TOKEN_HEADER); // GET token form request
+		
 
 		if (jwtService.validateTokenLogin(authToken)) { // check validate token login
 			String username = jwtService.getUsernameFromToken(authToken);
-
-			User user = userService.loadUserByUsername(username);
 			
+			User user = userService.loadUserByUsername(username);
+
 			if (user != null) {
-				boolean enabled = true;
-				boolean accountNonExpired = true;
-				boolean credentialsNonExpired = true;
-				boolean accountNonLocked = true;
+				System.out.println(username);
+		        boolean enabled = true;
+		        boolean accountNonExpired = true;
+		        boolean credentialsNonExpired = true;
+		        boolean accountNonLocked = true;
 				//create user detail
-				UserDetails userDetail = new org.springframework.security.core.userdetails.User(username,
-						user.getPassword(), enabled, accountNonExpired, credentialsNonExpired, accountNonLocked,
-						user.getAuthorities());
+				UserDetails userDetail = new org.springframework.security.core.userdetails.User(username, user.getPassword(), enabled, accountNonExpired,
+			            credentialsNonExpired, accountNonLocked, user.getAuthorities());
 				//create authentication
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail,
 						null, userDetail.getAuthorities());
+				
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			}
